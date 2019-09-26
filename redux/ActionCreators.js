@@ -4,7 +4,6 @@ import { baseUrl } from '../shared/baseUrl';
 export const fetchComments = () => (dispatch) => {
     return fetch(baseUrl + 'comments')
     .then(response => {
-        console.log(response)
         if (response.ok) {
           return response;
         } else {
