@@ -4,6 +4,7 @@ import { baseUrl } from '../shared/baseUrl';
 export const fetchComments = () => (dispatch) => {
     return fetch(baseUrl + 'comments')
     .then(response => {
+        console.log(response)
         if (response.ok) {
           return response;
         } else {
@@ -37,7 +38,6 @@ export const fetchDishes = () => (dispatch) => {
 
     return fetch(baseUrl + 'dishes')
     .then(response => {
-        console.log('40',response);
         if (response.ok) {
           return response;
         } else {
@@ -155,4 +155,44 @@ export const postFavorite = (dishId)  => (dispatch) => {
 export const addFavorite = (dishId) => ({
     type: ActionTypes.ADD_FAVORITE,
     payload: dishId
+});
+
+export const postComment = (dishId, rating, comment, author) => (dispatch) => {
+    const newComment = {
+        dishId: dishId,
+        rating: rating,
+        author: author,
+        comment: comment
+    };
+    newComment.date = new Date().toISOString();
+
+    return fetch(baseUrl + 'comments', {
+        method: 'POST',
+        body: JSON.stringify(newComment),
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
+    })
+    .then(response => {
+        if(response.ok) {
+            return response;
+        } else {
+            var error = new Error('Error' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+    },
+    error => {
+        throw error;
+    })
+    .then(response => response.json())
+    .then(response => setTimeout(() => {dispatch(addComment(response))}, 2000))
+    .catch(error => { console.log('post comments', errorr.message); alert('Your comment cannot be posted\nError: ' + error.message); });
+};
+
+
+export const addComment = (comment) => ({
+    type: ActionTypes.ADD_COMMENT,
+    payload: comment
 });
